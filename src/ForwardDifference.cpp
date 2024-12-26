@@ -12,6 +12,11 @@ ForwardDifference::ForwardDifference(float dt)
 
 void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
 {
+    // TODO: Needs HELLA optimization:
+    //       - Can we move computation of sigma and the stencil somewhere else so we only have to do it once?
+    //       - Can we have a function that just copies over the solution vector directly to the domain?
+    //       As for non-optimizing actions:
+    //       - Need to integrate boundary conditions and source function
     float spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
     float sigma = heatEq.getDifussionCoefficient() * (float)timeStep * float(spatialDivs) * float(spatialDivs);
 
@@ -41,6 +46,4 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     {
         (heatEq.getDomainPtr())->setFValAtIdx(i, wijp1(i , 0));
     }
-
-    wijp1.resize(spatialDivs, spatialDivs);
 }

@@ -19,6 +19,7 @@ add_library(heat_sim_lib STATIC
     src/PDE.cpp
     src/ForwardDifference.cpp
     src/PDESolver.cpp
+    src/HeatMapGradient.cpp
 )
 
 add_executable(heat_sim src/main.cpp)

@@ -16,7 +16,16 @@ int main()
 
     int mapSize = 20;
 
+    HeatMapGradient gradient(
+        std::vector<sf::Color>(
+            {
+                sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color::Red, sf::Color::White
+            }
+        )
+    );
+
     HeatMap heatMap((1280) / mapSize, mapSize, &window);
+    heatMap.setGradient(gradient);
 
     while (window.isOpen())
     {
@@ -35,7 +44,7 @@ int main()
                 auto button = event.mouseButton.button;
 
                 int kernelSize = 11;
-                float sigma = 2;
+                float sigma = 3;
                 float kernel[kernelSize][kernelSize];
                 double sum = 0.0;
                 int center = kernelSize / 2;

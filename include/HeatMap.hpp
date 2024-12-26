@@ -6,6 +6,7 @@
 
 #include "PDE.hpp"
 #include "PDESolver.hpp"
+#include "HeatMapGradient.hpp"
 
 class HeatMap
 {
@@ -15,6 +16,7 @@ class HeatMap
 
         void setCellTemperature(int i, int j, float temperature);
         void incrementCellTemperature(int i, int j, float incrementAmount);
+        void setGradient(HeatMapGradient &gradient);
 
         void draw();
         void print();
@@ -26,6 +28,8 @@ class HeatMap
         PDE::SpatialMesh mesh;
         HeatEquationSolver* solver;
         PDE::HeatEquationProblem heatEq;
+
+        HeatMapGradient* gradient;
 
         sf::RenderWindow* window_ctx;
 
