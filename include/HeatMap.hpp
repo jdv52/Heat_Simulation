@@ -4,20 +4,45 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+#include "PDE.hpp"
+#include "PDESolver.hpp"
+
 class HeatMap
 {
     public:
-        HeatMap(int stepSize, int mapSize);
+        HeatMap(int stepSize, int mapSize, sf::RenderWindow *ctx);
         ~HeatMap();
 
-        void setDistribution(std::vector<float> distribution);
-        void draw(sf::RenderWindow &window);
+        void setCellTemperature(int i, int j, float temperature);
+        void incrementCellTemperature(int i, int j, float incrementAmount);
+
+        void draw();
+        void print();
+
+        void simulate();
 
     private:
         int stepSize, mapSize;
+        PDE::SpatialMesh mesh;
+        HeatEquationSolver* solver;
+        PDE::HeatEquationProblem heatEq;
 
-        std::vector<sf::RectangleShape *> rectangles;
+        sf::RenderWindow* window_ctx;
+
         void initMap();
+
+        /**
+         * @brief The initial distribution of the heat map
+         * 
+         * Takes in an (i, j) coordinate and outputs a floating point value
+         * indicating the amount of heat energy at (i ,j). Heat energy is sampled
+         * from the discretized heat map 
+         * 
+         * @param i spatial domain coordinate along the horizontal aaxis
+         * @param j spatial domain coordinate along the a
+         * @return heat energy at (i, j) as a float
+         */
+        float distribution_fn(float i, float j);
 };
 
 #endif
