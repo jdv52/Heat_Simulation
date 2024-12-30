@@ -17,13 +17,14 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     //       - Can we have a function that just copies over the solution vector directly to the domain?
     //       As for non-optimizing actions:
     //       - Need to integrate boundary conditions and source function
-    float spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
+    int spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
     float sigma = heatEq.getDifussionCoefficient() * (float)timeStep * float(spatialDivs) * float(spatialDivs);
 
     Eigen::MatrixXf wij = Eigen::Map<Eigen::MatrixXf>(((heatEq.getDomainPtr())->getDomainAsVectorPtr())->data(), spatialDivs, spatialDivs);
     wij.resize(spatialDivs * spatialDivs, 1);
 
     Eigen::SparseMatrix<float> stencil (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
+    Eigen::SparseMatrix<float> bcs (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
 
     std::vector<Eigen::Triplet<float>> coeffTriplets;
     for (int i = 1; i < spatialDivs - 1; ++i)
@@ -39,11 +40,35 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     }
     stencil.setFromTriplets(coeffTriplets.begin(), coeffTriplets.end());
 
+    std::vector<Eigen::Triplet<float>> bcsTriplets;
+    for (int i = 0; i < spatialDivs; ++ i)
+    {
+        for (int j = 0; j < spatialDivs; ++ j) {
+            float bc = 1;
+            if (i == 0) {
+                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, bc));
+            }
+            if (i == spatialDivs - 1)
+                coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, bc));
 
-    Eigen::MatrixXf wijp1 = stencil * wij;
+            if (j == 0) {
+                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + 1, bc));
+            }
+            if (j == spatialDivs - 1)
+                coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - 1, bc));
+        }
+        
+    }
+    bcs.setFromTriplets(bcsTriplets.begin(), bcsTriplets.end());
 
-    for (int i = 1; i < spatialDivs * spatialDivs - 2; ++i)
+    Eigen::MatrixXf wijp1 = (stencil + bcs) * wij;
+
+    for (int i = 0; i < spatialDivs * spatialDivs; ++i)
     {
         (heatEq.getDomainPtr())->setFValAtIdx(i, wijp1(i , 0));
     }
+
+    // std::cout << bcs << "\n";
+    // wijp1.resize(spatialDivs, spatialDivs);
+    // std::cout << wijp1 << "\n\n";
 }

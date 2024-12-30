@@ -14,7 +14,7 @@ int main()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
-    int mapSize = 20;
+    int mapSize = 40;
 
     HeatMapGradient gradient(
         std::vector<sf::Color>(
@@ -43,8 +43,8 @@ int main()
                 int mouseY = event.mouseButton.y * mapSize / 1280;
                 auto button = event.mouseButton.button;
 
-                int kernelSize = 11;
-                float sigma = 3;
+                int kernelSize = 21;
+                float sigma = 5;
                 float kernel[kernelSize][kernelSize];
                 double sum = 0.0;
                 int center = kernelSize / 2;
@@ -66,12 +66,12 @@ int main()
                     {
                         double x = mouseX - center + i;
                         double y = mouseY - center + j;
-                        if (x < mapSize && y < mapSize && x >= 0 && y >= 0) {
+                        if (x < mapSize - 1 && y < mapSize - 1 && x >= 1 && y >= 1) {
                             if (button == sf::Mouse::Button::Left)
                             {
-                                heatMap.incrementCellTemperature(x, y, 1.f * 0.5f * kernel[i][j]);
+                                heatMap.incrementCellTemperature(x, y, 1.f * kernel[i][j]);
                             } else if (button == sf::Mouse::Button::Right) {
-                                heatMap.incrementCellTemperature(x, y, -1.f * 0.5f * kernel[i][j]);
+                                heatMap.incrementCellTemperature(x, y, -1.f * kernel[i][j]);
                             }
                         }
                     }
