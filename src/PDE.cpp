@@ -57,10 +57,7 @@ namespace PDE {
     float SpatialMesh::getFValAtMeshPoint(std::vector<int> meshPoint)
     {
         int idx = meshPointToVectorIdx(meshPoint);
-        // std::cout << "Was able to convert to idx " << idx << "\n";
-
         return mesh.at(idx);
-        // std::cout << "Was able set value at " << idx << "\n";
     }
 
     void SpatialMesh::setFValAtIdx(int idx, float val)
@@ -83,7 +80,6 @@ namespace PDE {
                 idx += meshPoint.at(i) * std::pow(nDivs, i);
             }
 
-            // std::cout << idx << "\n";
             return idx;
         } else {
             throw std::runtime_error("Input meshPoints dimension is inconsistent with mesh dimension.");
@@ -102,17 +98,16 @@ namespace PDE {
         return meshPoints;
     }
 
-    HeatEquationProblem::HeatEquationProblem(float diffusionCoefficient, SpatialMesh *spatialDomain, Function_handle _source)
+    HeatEquationProblem::HeatEquationProblem(float diffusionCoefficient, std::shared_ptr<SpatialMesh>spatialDomain, Function_handle _source)
         : diffusionCoefficient(diffusionCoefficient),
         domain(spatialDomain),
         source(_source)
     {
-        
     }
 
     HeatEquationProblem::~HeatEquationProblem()
     {
-        delete domain;
+        
     }
 
     float HeatEquationProblem::getDifussionCoefficient()
@@ -122,15 +117,15 @@ namespace PDE {
 
     float HeatEquationProblem::evaluateSource(int i, int j)
     {
-        return domain->getFValAtMeshPoint(std::vector<int>({i, j}));
+        return source(std::vector<int>({i, j}), 0);
     }
 
-    SpatialMesh *HeatEquationProblem::getDomainPtr()
+    std::shared_ptr<SpatialMesh> HeatEquationProblem::getDomainPtr()
     {
         return domain;
     }
 
-    std::vector<float> *SpatialMesh::getDomainAsVectorPtr()
+    std::vector<float>* SpatialMesh::getDomainAsVectorPtr()
     {
         return &mesh;
     }

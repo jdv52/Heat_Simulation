@@ -3,6 +3,11 @@
 
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include "eigen3/Eigen/Dense"
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <chrono>
 
 #include "PDE.hpp"
 #include "PDESolver.hpp"
@@ -15,38 +20,41 @@ class HeatMap
         ~HeatMap();
 
         void setCellTemperature(int i, int j, float temperature);
-        void incrementCellTemperature(int i, int j, float incrementAmount);
         void setGradient(HeatMapGradient &gradient);
+        void applyHeatAtPoint(int x, int y, int kernelSize, float strength, float heatMultiplier);
+        void initPDE();
 
         void draw();
         void print();
+        float getPointOnDrawing(int i, int j);
+        void clearDrawing();
 
-        void simulate();
+        void simulate_Start();
+        void simulate_Stop();
+        void simulate_Toggle();
+        void simulate_ManualStep();
+        void simulate_ThreadedLoop();
+
+        float source_fn(std::vector<int> x, float t);
 
     private:
         int stepSize, mapSize;
-        PDE::SpatialMesh mesh;
-        HeatEquationSolver* solver;
-        PDE::HeatEquationProblem heatEq;
+        std::shared_ptr<PDE::SpatialMesh> shared_mesh_ptr;
+        std::unique_ptr<HeatEquationSolver> solver;
+        std::unique_ptr <PDE::HeatEquationProblem> heatEq;
 
         HeatMapGradient* gradient;
 
+        bool simulationRunning;
+
         sf::RenderWindow* window_ctx;
+        Eigen::MatrixXf drawingMatrix;
+        Eigen::MatrixXf tempDrawing;
+
+        std::thread updateThread;
+        std::mutex mutex;
 
         void initMap();
-
-        /**
-         * @brief The initial distribution of the heat map
-         * 
-         * Takes in an (i, j) coordinate and outputs a floating point value
-         * indicating the amount of heat energy at (i ,j). Heat energy is sampled
-         * from the discretized heat map 
-         * 
-         * @param i spatial domain coordinate along the horizontal aaxis
-         * @param j spatial domain coordinate along the a
-         * @return heat energy at (i, j) as a float
-         */
-        float distribution_fn(float i, float j);
 };
 
 #endif

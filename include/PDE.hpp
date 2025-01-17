@@ -2,10 +2,14 @@
 #define PDE_H
 
 #include <vector>
+#include <functional>
+#include <memory>
 
 namespace PDE {
 
-    typedef float(*Function_handle)(float x, float y, float t);
+    typedef std::function<float(std::vector<int>, float)> Function_handle;
+
+    // typedef float(*Function_handle)(std::vector<float> x, float t);
 
     typedef float(*PDE_Function_handle)(float x, float y, float t, float u, float dudt, float dudx);
 
@@ -130,7 +134,7 @@ namespace PDE {
         public:
             HeatEquationProblem(
                 float diffusionCoefficient,
-                SpatialMesh* spatialDomain,
+                std::shared_ptr<SpatialMesh> spatialDomain,
                 Function_handle source
             );
 
@@ -138,53 +142,13 @@ namespace PDE {
 
             float getDifussionCoefficient();
             float evaluateSource(int i, int j);
-            SpatialMesh* getDomainPtr();
+            std::shared_ptr<SpatialMesh> getDomainPtr();
 
         private:
             float diffusionCoefficient;
-            SpatialMesh* domain;
+            std::shared_ptr<SpatialMesh> domain;
             Function_handle source;
     };
-
-    class BoundaryValueProblem
-    {
-        public:
-        
-            /**
-             * @brief Construct a new Boundary Value Problem object
-             * 
-             * Assumes that the posed PDE is of the form:
-             * 
-             * du/dt = L(u) + f(x, t)
-             * 
-             * Where f(x,t) is a source function specified by the source parameter,
-             * and L(u) is a vector of linear operator applied on u, such that
-             * when summed together, they give the PDE above. For example, the heat
-             * equation is given by:
-             * 
-             * ut = a*uxx + f(x,t)
-             * 
-             * For this PDE, L(u) = a*(u)xx
-             * 
-             * As another example, the wave equation is given by:
-             * 
-             * utt = c^2*uxx
-             * 
-             * Then, L(u) = c^2*(u)xx - (u)tt + (u)t with f(x,t) = 0.
-             * 
-             * @param operators Operators that sum together to form L(u)
-             * @param spatialDomain a n-D rectangular mesh
-             * @param source A function handle for f(x,t) assuming the PDE form above
-             */
-            BoundaryValueProblem(
-                std::vector<Function_handle> operators,
-                SpatialMesh* spatialDomain,
-                Function_handle source
-            );
-            
-            ~BoundaryValueProblem();
-    };
-
 }
 
 #endif

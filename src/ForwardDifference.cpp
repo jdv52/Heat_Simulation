@@ -10,6 +10,11 @@ ForwardDifference::ForwardDifference(float dt)
 
 }
 
+ForwardDifference::~ForwardDifference()
+{
+
+}
+
 void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
 {
     // TODO: Needs HELLA optimization:
@@ -19,6 +24,11 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     //       - Need to integrate boundary conditions and source function
     int spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
     float sigma = heatEq.getDifussionCoefficient() * (float)timeStep * float(spatialDivs) * float(spatialDivs);
+    // std::cout << "Sigma was: " << sigma << "\n";
+    // if (sigma > 0.5)
+    // {
+    //     std::cout << "Warning: sigma value > 0.5. FDM method may be unstable.";
+    // }
 
     Eigen::MatrixXf wij = Eigen::Map<Eigen::MatrixXf>(((heatEq.getDomainPtr())->getDomainAsVectorPtr())->data(), spatialDivs, spatialDivs);
     wij.resize(spatialDivs * spatialDivs, 1);
@@ -49,26 +59,38 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
                 bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, bc));
             }
             if (i == spatialDivs - 1)
-                coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, bc));
+                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, bc));
 
             if (j == 0) {
                 bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + 1, bc));
             }
             if (j == spatialDivs - 1)
-                coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - 1, bc));
+                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - 1, bc));
         }
         
     }
+
+    Eigen::MatrixXf F (spatialDivs * spatialDivs, 1);
+    for (int i = 0; i < spatialDivs; ++i)
+    {
+        for (int j = 0; j < spatialDivs; ++j)
+        {
+
+            F(spatialDivs * i + j, 0) = heatEq.evaluateSource(i, j);
+        }
+    }
+
     bcs.setFromTriplets(bcsTriplets.begin(), bcsTriplets.end());
 
-    Eigen::MatrixXf wijp1 = (stencil + bcs) * wij;
+    Eigen::MatrixXf wijp1 = ((stencil + bcs) * wij) + F;
 
     for (int i = 0; i < spatialDivs * spatialDivs; ++i)
     {
         (heatEq.getDomainPtr())->setFValAtIdx(i, wijp1(i , 0));
     }
 
+    // std::cout << stencil << "\n";
     // std::cout << bcs << "\n";
-    // wijp1.resize(spatialDivs, spatialDivs);
+    wijp1.resize(spatialDivs, spatialDivs);
     // std::cout << wijp1 << "\n\n";
 }

@@ -11,6 +11,8 @@ class HeatEquationSolver {
         HeatEquationSolver(float dt);
         ~HeatEquationSolver();
 
+        void setTimeStep(float dt);
+
         virtual void solve(PDE::HeatEquationProblem& heatEq) = 0;
 
     protected:

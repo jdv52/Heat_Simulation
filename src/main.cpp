@@ -7,14 +7,9 @@
 
 int main()
 {
-
-    PDE::SpatialMesh mesh(std::vector<float>(2.f, 1.f), 4);
-
     sf::RenderWindow window(sf::VideoMode(1960, 1280), "SFML works!", sf::Style::Close);
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
 
-    int mapSize = 40;
+    int mapSize = 20;
 
     HeatMapGradient gradient(
         std::vector<sf::Color>(
@@ -27,6 +22,9 @@ int main()
     HeatMap heatMap((1280) / mapSize, mapSize, &window);
     heatMap.setGradient(gradient);
 
+    bool mouseDown;
+    float scaleMultiplier = 1.0;
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -38,59 +36,47 @@ int main()
             }
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-
-                int mouseX = event.mouseButton.x * mapSize / 1280;
-                int mouseY = event.mouseButton.y * mapSize / 1280;
-                auto button = event.mouseButton.button;
-
-                int kernelSize = 21;
-                float sigma = 5;
-                float kernel[kernelSize][kernelSize];
-                double sum = 0.0;
-                int center = kernelSize / 2;
-
-                for (int i = 0; i < kernelSize; ++i)
+                if (event.mouseButton.button == sf::Mouse::Button::Left)
                 {
-                    for (int j = 0; j < kernelSize; ++j)
-                    {
-                        double x = i - center;
-                        double y = j - center;
-                        kernel[i][j] = exp(-(x * x + y * y) / (2 * sigma * sigma)) / (2 * M_PI * sigma * sigma);
-                        sum += kernel[i][j];
-                    }
+                    scaleMultiplier = 1.0;
+                    mouseDown = true;
+                } else if (event.mouseButton.button == sf::Mouse::Button::Right) {
+                    scaleMultiplier = -1.0;
+                    mouseDown = true;
                 }
-
-                for (int i = 0; i < kernelSize; ++i)
-                {
-                    for (int j = 0; j < kernelSize; ++j)
-                    {
-                        double x = mouseX - center + i;
-                        double y = mouseY - center + j;
-                        if (x < mapSize - 1 && y < mapSize - 1 && x >= 1 && y >= 1) {
-                            if (button == sf::Mouse::Button::Left)
-                            {
-                                heatMap.incrementCellTemperature(x, y, 1.f * kernel[i][j]);
-                            } else if (button == sf::Mouse::Button::Right) {
-                                heatMap.incrementCellTemperature(x, y, -1.f * kernel[i][j]);
-                            }
-                        }
-                    }
-                }
+            }
+            else if (event.type == sf::Event::MouseButtonReleased)
+            {
+                mouseDown = false;
             }
             else if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::K)
                 {
-                    heatMap.simulate();
+                    heatMap.simulate_Toggle();
                 }
             }
         }
 
+        if (mouseDown) {
+            int mouseX = sf::Mouse::getPosition(window).x * mapSize / 1280;
+            int mouseY =  sf::Mouse::getPosition(window).y * mapSize / 1280;
+
+            int kernelSize = 21;
+            float strength = 0.4;
+
+            // std::cout << mouseX << " " << mouseY << "\n";
+
+            // if (button == sf::Mouse::Button::Left) {
+            heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 1000.0 * scaleMultiplier);
+            // } else if (button == sf::Mouse::Button::Right) {
+                // heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 3000.0);
+            // }
+        }
+
         window.clear();
-        // heatMap.simulate();
         heatMap.draw();
         window.display();
-
 
         /*
             Settings:
@@ -107,6 +93,8 @@ int main()
             - Add heat
         */
     }
+
+    heatMap.simulate_Stop();
 
     return 0;
 }
