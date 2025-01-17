@@ -7,11 +7,11 @@
 
 namespace PDE {
 
-    typedef std::function<float(std::vector<int>, float)> Function_handle;
+    typedef std::function<double(std::vector<int>, double)> Function_handle;
 
-    // typedef float(*Function_handle)(std::vector<float> x, float t);
+    // typedef double(*Function_handle)(std::vector<double> x, double t);
 
-    typedef float(*PDE_Function_handle)(float x, float y, float t, float u, float dudt, float dudx);
+    typedef double(*PDE_Function_handle)(double x, double y, double t, double u, double dudt, double dudx);
 
     class SpatialMesh
     {
@@ -25,7 +25,7 @@ namespace PDE {
              * @param bounds the upper bounds of the mesh
              * @param nDivs the number of divisions along each dimension
              */
-            SpatialMesh(std::vector<float> bounds, int nDivs);
+            SpatialMesh(std::vector<double> bounds, int nDivs);
 
             int getNumDivs();
             
@@ -44,15 +44,15 @@ namespace PDE {
              * @param meshPoint a vector specifying the coordinates of the mesh point to set
              * @param val the value to assign to the meshPoin
              */
-            void setFValAtMeshPoint(std::vector<int> meshPoint, float val);
+            void setFValAtMeshPoint(std::vector<int> meshPoint, double val);
 
             /**
              * @brief A utility function to retrieve the assigned value at a specified meshpoint
              * 
              * @param meshPoint a vector specifying the coordinates of the mesh point to read
-             * @return the corresponding float value at meshPoint
+             * @return the corresponding double value at meshPoint
              */
-            float getFValAtMeshPoint(std::vector<int> meshPoint);
+            double getFValAtMeshPoint(std::vector<int> meshPoint);
 
             /**
              * @brief A utility function to assign a value to a specified index
@@ -60,23 +60,23 @@ namespace PDE {
              * @param idx an integer corresponding to a meshpoint in the mesh
              * @param val the value to assign to the idx
              */
-            void setFValAtIdx(int idx, float val);
+            void setFValAtIdx(int idx, double val);
 
             /**
              * @brief A utility function to retrieve the assigned value at a specified meshpoint
              * 
              * @param idx an integer corresponding to a meshpoint in the mesh
-             * @return the corresponding float value at idx
+             * @return the corresponding double value at idx
              */
-            float getFValAtIdx(int idx);
+            double getFValAtIdx(int idx);
 
-            std::vector<float>* getDomainAsVectorPtr();
+            std::vector<double>* getDomainAsVectorPtr();
 
         private:
             int nDivs;
             int dimension;
-            std::vector<float> bounds;
-            std::vector<float> mesh;
+            std::vector<double> bounds;
+            std::vector<double> mesh;
 
             /**
              * @brief A utility function to convert a n-d mesh point to a 1-D vector idx
@@ -119,11 +119,11 @@ namespace PDE {
              * @param beta the beta function as specified above
              * @param G the G function as specified above
              */
-            BoundaryCondition(float x, Function_handle alpha, Function_handle beta, Function_handle G);
+            BoundaryCondition(double x, Function_handle alpha, Function_handle beta, Function_handle G);
 
         private:
 
-            float x;
+            double x;
             Function_handle alpha;
             Function_handle beta;
             Function_handle G;
@@ -133,19 +133,19 @@ namespace PDE {
     {
         public:
             HeatEquationProblem(
-                float diffusionCoefficient,
+                double diffusionCoefficient,
                 std::shared_ptr<SpatialMesh> spatialDomain,
                 Function_handle source
             );
 
             ~HeatEquationProblem();
 
-            float getDifussionCoefficient();
-            float evaluateSource(int i, int j);
+            double getDifussionCoefficient();
+            double evaluateSource(int i, int j);
             std::shared_ptr<SpatialMesh> getDomainPtr();
 
         private:
-            float diffusionCoefficient;
+            double diffusionCoefficient;
             std::shared_ptr<SpatialMesh> domain;
             Function_handle source;
     };

@@ -6,13 +6,13 @@
 #include <iomanip>
 
 namespace PDE {
-    SpatialMesh::SpatialMesh(std::vector<float> _bounds, int _nDivs)
+    SpatialMesh::SpatialMesh(std::vector<double> _bounds, int _nDivs)
     {
         bounds = _bounds;
         nDivs = _nDivs;
         dimension = _bounds.size();
 
-        mesh = std::vector<float>(std::pow(nDivs, dimension), 0.0f);
+        mesh = std::vector<double>(std::pow(nDivs, dimension), 0.0);
     }
 
     int SpatialMesh::getNumDivs()
@@ -30,7 +30,7 @@ namespace PDE {
             for (int j = 0; j < meshPoints.size(); ++j)
             {
                 int point = meshPoints.at(j);
-                float coordPoint = point * bounds.at(j) / nDivs;
+                double coordPoint = point * bounds.at(j) / nDivs;
                 std::cout << std::fixed << std::setprecision(2) << coordPoint;
                 if (j != meshPoints.size() - 1)
                 {
@@ -47,25 +47,25 @@ namespace PDE {
         std::cout << "\n";
     }
 
-    void SpatialMesh::setFValAtMeshPoint(std::vector<int> meshPoint, float val)
+    void SpatialMesh::setFValAtMeshPoint(std::vector<int> meshPoint, double val)
     {
         int idx = meshPointToVectorIdx(meshPoint);
 
         mesh.at(idx) = val;
     }
 
-    float SpatialMesh::getFValAtMeshPoint(std::vector<int> meshPoint)
+    double SpatialMesh::getFValAtMeshPoint(std::vector<int> meshPoint)
     {
         int idx = meshPointToVectorIdx(meshPoint);
         return mesh.at(idx);
     }
 
-    void SpatialMesh::setFValAtIdx(int idx, float val)
+    void SpatialMesh::setFValAtIdx(int idx, double val)
     {
         mesh.at(idx) = val;
     }
 
-    float SpatialMesh::getFValAtIdx(int idx)
+    double SpatialMesh::getFValAtIdx(int idx)
     {
         return mesh.at(idx);
     }
@@ -98,7 +98,7 @@ namespace PDE {
         return meshPoints;
     }
 
-    HeatEquationProblem::HeatEquationProblem(float diffusionCoefficient, std::shared_ptr<SpatialMesh>spatialDomain, Function_handle _source)
+    HeatEquationProblem::HeatEquationProblem(double diffusionCoefficient, std::shared_ptr<SpatialMesh>spatialDomain, Function_handle _source)
         : diffusionCoefficient(diffusionCoefficient),
         domain(spatialDomain),
         source(_source)
@@ -110,12 +110,12 @@ namespace PDE {
         
     }
 
-    float HeatEquationProblem::getDifussionCoefficient()
+    double HeatEquationProblem::getDifussionCoefficient()
     {
         return diffusionCoefficient;
     }
 
-    float HeatEquationProblem::evaluateSource(int i, int j)
+    double HeatEquationProblem::evaluateSource(int i, int j)
     {
         return source(std::vector<int>({i, j}), 0);
     }
@@ -125,7 +125,7 @@ namespace PDE {
         return domain;
     }
 
-    std::vector<float>* SpatialMesh::getDomainAsVectorPtr()
+    std::vector<double>* SpatialMesh::getDomainAsVectorPtr()
     {
         return &mesh;
     }

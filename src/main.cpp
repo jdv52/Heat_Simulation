@@ -23,7 +23,7 @@ int main()
     heatMap.setGradient(gradient);
 
     bool mouseDown;
-    float scaleMultiplier = 1.0;
+    double scaleMultiplier = 1.0;
 
     while (window.isOpen())
     {
@@ -63,12 +63,12 @@ int main()
             int mouseY =  sf::Mouse::getPosition(window).y * mapSize / 1280;
 
             int kernelSize = 21;
-            float strength = 0.4;
+            double strength = 0.4;
 
             // std::cout << mouseX << " " << mouseY << "\n";
 
             // if (button == sf::Mouse::Button::Left) {
-            heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 1000.0 * scaleMultiplier);
+            heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 500.0 * scaleMultiplier);
             // } else if (button == sf::Mouse::Button::Right) {
                 // heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 3000.0);
             // }

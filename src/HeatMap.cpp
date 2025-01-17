@@ -7,7 +7,7 @@
 
 
 HeatMap::HeatMap(int stepSize, int mapSize, sf::RenderWindow *ctx) 
-    : shared_mesh_ptr(std::make_shared<PDE::SpatialMesh>(std::vector<float>(2, 1.0f), mapSize)),
+    : shared_mesh_ptr(std::make_shared<PDE::SpatialMesh>(std::vector<double>(2, 1.0), mapSize)),
         drawingMatrix(mapSize, mapSize)
 {
     this->stepSize = stepSize;
@@ -27,9 +27,9 @@ HeatMap::~HeatMap()
     
 }
 
-void HeatMap::setCellTemperature(int i, int j, float temperature)
+void HeatMap::setCellTemperature(int i, int j, double temperature)
 {
-    shared_mesh_ptr->setFValAtMeshPoint(std::vector<int>({i, j}), std::clamp(temperature, 0.0f, 1.0f));
+    shared_mesh_ptr->setFValAtMeshPoint(std::vector<int>({i, j}), std::clamp(temperature, 0.0, 1.0));
 }
 
 void HeatMap::setGradient(HeatMapGradient &_gradient)
@@ -37,13 +37,13 @@ void HeatMap::setGradient(HeatMapGradient &_gradient)
     this->gradient = &_gradient;
 }
 
-void HeatMap::applyHeatAtPoint(int x, int y, int kernelSize, float strength, float heatMultiplier)
+void HeatMap::applyHeatAtPoint(int x, int y, int kernelSize, double strength, double heatMultiplier)
 {
     double sum = 0;
-    float sigma = 1 / strength;
+    double sigma = 1 / strength;
     int center = kernelSize / 2;
 
-    float kernel[kernelSize][kernelSize];
+    double kernel[kernelSize][kernelSize];
 
     for (int i = 0; i < kernelSize; ++i)
     {
@@ -72,7 +72,7 @@ void HeatMap::applyHeatAtPoint(int x, int y, int kernelSize, float strength, flo
     }
 }
 
-float HeatMap::source_fn(std::vector<int> x, float t)
+double HeatMap::source_fn(std::vector<int> x, double t)
 {
     int i = x.at(0);
     int j = x.at(1);
@@ -91,12 +91,12 @@ void HeatMap::draw()
         {
             auto cell_rect = sf::RectangleShape(sf::Vector2f(stepSize, stepSize));
             cell_rect.setPosition(sf::Vector2f(i * stepSize + 0, j * stepSize + 0));
-            cell_rect.setOutlineThickness(1.0f);
+            cell_rect.setOutlineThickness(1.0);
             cell_rect.setOutlineColor(sf::Color::Black);
 
-            float temp = shared_mesh_ptr->getFValAtMeshPoint(std::vector<int>({i, j}));
+            double temp = shared_mesh_ptr->getFValAtMeshPoint(std::vector<int>({i, j}));
 
-            cell_rect.setFillColor(gradient->mapFloatToColor(temp, -1000, 1000));
+            cell_rect.setFillColor(gradient->mapdoubleToColor(temp, -1000, 1000));
             window_ctx->draw(cell_rect);    
         }
     }
@@ -114,17 +114,17 @@ void HeatMap::initMap()
 
     for (int i = 0; i < mapSize * mapSize; ++i)
     {
-        shared_mesh_ptr->setFValAtIdx(i, 0.0f);
+        shared_mesh_ptr->setFValAtIdx(i, 0.0);
     }
 }
 
 void HeatMap::initPDE()
 {
-    PDE::Function_handle fn = [this](std::vector<int> x, float t) {
+    PDE::Function_handle fn = [this](std::vector<int> x, double t) {
         return this->source_fn(x, t);
     };
 
-    heatEq = std::make_unique<PDE::HeatEquationProblem>(0.00000000000000001f, shared_mesh_ptr, fn);
+    heatEq = std::make_unique<PDE::HeatEquationProblem>(1e-16, shared_mesh_ptr, fn);
 }
 
 void HeatMap::simulate_ManualStep()
@@ -133,7 +133,7 @@ void HeatMap::simulate_ManualStep()
     clearDrawing();
 }
 
-float HeatMap::getPointOnDrawing(int i, int j)
+double HeatMap::getPointOnDrawing(int i, int j)
 {
     return drawingMatrix(i, j);
 }

@@ -4,7 +4,7 @@
 #include "PDESolver.hpp"
 #include "eigen3/Eigen/SparseCore"
 
-ForwardDifference::ForwardDifference(float dt)
+ForwardDifference::ForwardDifference(double dt)
     : HeatEquationSolver(dt)
 {
 
@@ -23,54 +23,56 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     //       As for non-optimizing actions:
     //       - Need to integrate boundary conditions and source function
     int spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
-    float sigma = heatEq.getDifussionCoefficient() * (float)timeStep * float(spatialDivs) * float(spatialDivs);
+    double sigma = heatEq.getDifussionCoefficient() * (double)timeStep * double(spatialDivs) * double(spatialDivs);
     // std::cout << "Sigma was: " << sigma << "\n";
     // if (sigma > 0.5)
     // {
     //     std::cout << "Warning: sigma value > 0.5. FDM method may be unstable.";
     // }
 
-    Eigen::MatrixXf wij = Eigen::Map<Eigen::MatrixXf>(((heatEq.getDomainPtr())->getDomainAsVectorPtr())->data(), spatialDivs, spatialDivs);
+    Eigen::MatrixXd wij = Eigen::Map<Eigen::MatrixXd>(((heatEq.getDomainPtr())->getDomainAsVectorPtr())->data(), spatialDivs, spatialDivs);
     wij.resize(spatialDivs * spatialDivs, 1);
 
-    Eigen::SparseMatrix<float> stencil (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
-    Eigen::SparseMatrix<float> bcs (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
+    Eigen::SparseMatrix<double> stencil (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
+    Eigen::SparseMatrix<double> bcs (spatialDivs * spatialDivs, spatialDivs * spatialDivs);
 
-    std::vector<Eigen::Triplet<float>> coeffTriplets;
+    std::vector<Eigen::Triplet<double>> coeffTriplets;
     for (int i = 1; i < spatialDivs - 1; ++i)
     {
         for (int j = 1; j < spatialDivs - 1; ++j)
         {
-            coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j, 0.5 - (2 * sigma)));
-            coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + 1, sigma));
-            coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - 1, sigma));
-            coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, sigma));
-            coeffTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, sigma));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j, 0.5 - (2 * sigma)));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + 1, sigma));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j - 1, sigma));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, sigma));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, sigma));
         }
     }
     stencil.setFromTriplets(coeffTriplets.begin(), coeffTriplets.end());
 
-    std::vector<Eigen::Triplet<float>> bcsTriplets;
+    std::vector<Eigen::Triplet<double>> bcsTriplets;
     for (int i = 0; i < spatialDivs; ++ i)
     {
         for (int j = 0; j < spatialDivs; ++ j) {
-            float bc = 1;
+            double bc = 1;
+
+            // TODO: Deal with corner cases
             if (i == 0) {
-                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, bc));
+                bcsTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, bc));
             }
             if (i == spatialDivs - 1)
-                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, bc));
+                bcsTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j - spatialDivs, bc));
 
             if (j == 0) {
-                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j + 1, bc));
+                bcsTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + 1, bc));
             }
             if (j == spatialDivs - 1)
-                bcsTriplets.push_back(Eigen::Triplet<float>(i * spatialDivs + j, i * spatialDivs + j - 1, bc));
+                bcsTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j - 1, bc));
         }
         
     }
 
-    Eigen::MatrixXf F (spatialDivs * spatialDivs, 1);
+    Eigen::MatrixXd F (spatialDivs * spatialDivs, 1);
     for (int i = 0; i < spatialDivs; ++i)
     {
         for (int j = 0; j < spatialDivs; ++j)
@@ -82,7 +84,7 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
 
     bcs.setFromTriplets(bcsTriplets.begin(), bcsTriplets.end());
 
-    Eigen::MatrixXf wijp1 = ((stencil + bcs) * wij) + F;
+    Eigen::MatrixXd wijp1 = ((stencil + bcs) * wij) + F;
 
     for (int i = 0; i < spatialDivs * spatialDivs; ++i)
     {

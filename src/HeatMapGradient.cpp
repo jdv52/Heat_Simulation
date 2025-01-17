@@ -8,15 +8,15 @@ HeatMapGradient::HeatMapGradient(std::vector<sf::Color> _colors)
 
 }
 
-sf::Color HeatMapGradient::mapFloatToColor(float val, float min, float max)
+sf::Color HeatMapGradient::mapdoubleToColor(double val, double min, double max)
 {
     const int NUM_COLORS = colors.size();
     
     int idx1;        // |-- Our desired color will be between these two indexes in "color".
     int idx2;        // |
-    float fractBetween = 0;  // Fraction between "idx1" and "idx2" where our val
+    double fractBetween = 0;  // Fraction between "idx1" and "idx2" where our val
 
-    float normalizedVal = (val - min) / (max - min);
+    double normalizedVal = (val - min) / (max - min);
 
     if (normalizedVal <= 0)
         idx1 = idx2 = 0;   // accounts for an input <=0
@@ -27,7 +27,7 @@ sf::Color HeatMapGradient::mapFloatToColor(float val, float min, float max)
         normalizedVal = normalizedVal * (NUM_COLORS-1);        // Will multiply value by 3.
         idx1  = std::floor(normalizedVal);                  // Our desired color will be after this index.
         idx2  = idx1+1;                        // ... and before this index (inclusive).
-        fractBetween = normalizedVal - float(idx1);    // Distance between the two indexes (0-1).
+        fractBetween = normalizedVal - double(idx1);    // Distance between the two indexes (0-1).
     }
         
     int R = (colors.at(idx2).r - colors.at(idx1).r) * fractBetween + colors.at(idx1).r;

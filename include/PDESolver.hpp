@@ -8,20 +8,20 @@
 class HeatEquationSolver {
     public:
     
-        HeatEquationSolver(float dt);
+        HeatEquationSolver(double dt);
         ~HeatEquationSolver();
 
-        void setTimeStep(float dt);
+        void setTimeStep(double dt);
 
         virtual void solve(PDE::HeatEquationProblem& heatEq) = 0;
 
     protected:
-        float timeStep;
+        double timeStep;
 };
 
 class ForwardDifference : public HeatEquationSolver {
     public:
-        ForwardDifference(float dt);
+        ForwardDifference(double dt);
         ~ForwardDifference();
 
         void solve(PDE::HeatEquationProblem& heatEq) override;

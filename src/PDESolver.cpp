@@ -1,6 +1,6 @@
 #include "PDESolver.hpp"
 
-HeatEquationSolver::HeatEquationSolver(float dt) 
+HeatEquationSolver::HeatEquationSolver(double dt) 
     : timeStep(dt)
 {
     

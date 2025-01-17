@@ -11,7 +11,7 @@ class HeatMapGradient
 
         HeatMapGradient(std::vector<sf::Color> _colors);
 
-        sf::Color mapFloatToColor(float val, float min = 0, float max = 1);
+        sf::Color mapdoubleToColor(double val, double min = 0, double max = 1);
 
     private:
         std::vector<sf::Color> colors;

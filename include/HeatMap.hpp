@@ -19,14 +19,14 @@ class HeatMap
         HeatMap(int stepSize, int mapSize, sf::RenderWindow *ctx);
         ~HeatMap();
 
-        void setCellTemperature(int i, int j, float temperature);
+        void setCellTemperature(int i, int j, double temperature);
         void setGradient(HeatMapGradient &gradient);
-        void applyHeatAtPoint(int x, int y, int kernelSize, float strength, float heatMultiplier);
+        void applyHeatAtPoint(int x, int y, int kernelSize, double strength, double heatMultiplier);
         void initPDE();
 
         void draw();
         void print();
-        float getPointOnDrawing(int i, int j);
+        double getPointOnDrawing(int i, int j);
         void clearDrawing();
 
         void simulate_Start();
@@ -35,7 +35,7 @@ class HeatMap
         void simulate_ManualStep();
         void simulate_ThreadedLoop();
 
-        float source_fn(std::vector<int> x, float t);
+        double source_fn(std::vector<int> x, double t);
 
     private:
         int stepSize, mapSize;
@@ -48,8 +48,8 @@ class HeatMap
         bool simulationRunning;
 
         sf::RenderWindow* window_ctx;
-        Eigen::MatrixXf drawingMatrix;
-        Eigen::MatrixXf tempDrawing;
+        Eigen::MatrixXd drawingMatrix;
+        Eigen::MatrixXd tempDrawing;
 
         std::thread updateThread;
         std::mutex mutex;
