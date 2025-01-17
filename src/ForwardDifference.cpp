@@ -41,7 +41,7 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     {
         for (int j = 1; j < spatialDivs - 1; ++j)
         {
-            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j, 0.5 - (2 * sigma)));
+            coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j, 1 - (4 * sigma)));
             coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + 1, sigma));
             coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j - 1, sigma));
             coeffTriplets.push_back(Eigen::Triplet<double>(i * spatialDivs + j, i * spatialDivs + j + spatialDivs, sigma));
