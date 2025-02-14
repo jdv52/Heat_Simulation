@@ -24,7 +24,7 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     //       - Need to integrate boundary conditions and source function
     int spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
     double sigma = heatEq.getDifussionCoefficient() * (double)timeStep * double(spatialDivs) * double(spatialDivs);
-    // std::cout << "Sigma was: " << sigma << "\n";
+    std::cout << "Sigma was: " << sigma << "\n";
     // if (sigma > 0.5)
     // {
     //     std::cout << "Warning: sigma value > 0.5. FDM method may be unstable.";
@@ -54,7 +54,7 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
     for (int i = 0; i < spatialDivs; ++ i)
     {
         for (int j = 0; j < spatialDivs; ++ j) {
-            double bc = 1;
+            double bc = 0;
 
             // TODO: Deal with corner cases
             if (i == 0) {
@@ -93,6 +93,6 @@ void ForwardDifference::solve(PDE::HeatEquationProblem& heatEq)
 
     // std::cout << stencil << "\n";
     // std::cout << bcs << "\n";
-    wijp1.resize(spatialDivs, spatialDivs);
+    // wijp1.resize(spatialDivs, spatialDivs);
     // std::cout << wijp1 << "\n\n";
 }

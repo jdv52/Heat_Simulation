@@ -110,7 +110,7 @@ void HeatMap::print()
 void HeatMap::initMap()
 {
     std::cout << "Initializing map and solver...\n";
-    solver = std::make_unique<ForwardDifference>(0.001);
+    solver = std::make_unique<ForwardDifference>(0.01);
 
     for (int i = 0; i < mapSize * mapSize; ++i)
     {
@@ -124,7 +124,7 @@ void HeatMap::initPDE()
         return this->source_fn(x, t);
     };
 
-    heatEq = std::make_unique<PDE::HeatEquationProblem>(1e-3, shared_mesh_ptr, fn);
+    heatEq = std::make_unique<PDE::HeatEquationProblem>(1e-2, shared_mesh_ptr, fn);
 }
 
 void HeatMap::simulate_ManualStep()
@@ -158,13 +158,13 @@ void HeatMap::simulate_Stop()
 {
      if (simulationRunning)
      {
+        simulationRunning = false;
         std::cout << "Stopping Simulation.\n";
         if (updateThread.joinable())
         {
             updateThread.join();
         }
         
-        simulationRunning = false;
         std::cout << "Stopped!\n";
      }
 }
@@ -185,8 +185,7 @@ void HeatMap::simulate_ThreadedLoop()
             std::lock_guard<std::mutex> lock(mutex);
             solver->solve(*heatEq);
             clearDrawing();
-            // std::cout << "I'm in danger :)\n";
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }

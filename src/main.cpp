@@ -22,7 +22,7 @@ int main()
     HeatMap heatMap((1280) / mapSize, mapSize, &window);
     heatMap.setGradient(gradient);
 
-    bool mouseDown;
+    bool mouseDown = false;
     double scaleMultiplier = 1.0;
 
     while (window.isOpen())
