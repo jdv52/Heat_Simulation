@@ -1,1 +1,7 @@
 build
+.envrc
+.direnv
+flake.lock
+flake.nix
+*.ini
+*.txt

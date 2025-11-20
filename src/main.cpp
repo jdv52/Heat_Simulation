@@ -1,100 +1,55 @@
+#include "Simulation.hpp"
+#include "graphics/SimulationWindow.hpp"
+#include "util/SPSCDoubleBuffer.hpp"
+#include <chrono>
+#include <csignal>
 #include <iostream>
-#include <cmath>
-#include <SFML/Graphics.hpp>
 
-#include "HeatMap.hpp"
-#include "PDE.hpp"
+using namespace HeatSim;
 
-int main()
-{
-    sf::RenderWindow window(sf::VideoMode(1960, 1280), "SFML works!", sf::Style::Close);
+volatile std::sig_atomic_t gSignalStatus;
 
-    int mapSize = 20;
+void foo(std::shared_ptr<Simulation::SimRenderPipeline> ptr) {
+  while (!gSignalStatus) {
+    auto state = ptr->read();
 
-    HeatMapGradient gradient(
-        std::vector<sf::Color>(
-            {
-                sf::Color::Blue, sf::Color::Cyan, sf::Color::Green, sf::Color::Yellow, sf::Color::Red, sf::Color::White
-            }
-        )
-    );
+    std::cout << "Number of iterations: " << state.nIters << "\n";
+    std::cout << "Sim time: " << state.simTimeMS << "\n";
+    std::cout << "Actual Update Period: " << state.actualUpdatePeriodMS << "\n";
+    std::cout << "Avg update rate: " << state.nIters / state.simTimeMS * 1000
+              << "\n";
 
-    HeatMap heatMap((1280) / mapSize, mapSize, &window);
-    heatMap.setGradient(gradient);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
 
-    bool mouseDown = false;
-    double scaleMultiplier = 1.0;
+void signal_handler(int signal) { gSignalStatus = signal; }
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-            else if (event.type == sf::Event::MouseButtonPressed)
-            {
-                if (event.mouseButton.button == sf::Mouse::Button::Left)
-                {
-                    scaleMultiplier = 1.0;
-                    mouseDown = true;
-                } else if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                    scaleMultiplier = -1.0;
-                    mouseDown = true;
-                }
-            }
-            else if (event.type == sf::Event::MouseButtonReleased)
-            {
-                mouseDown = false;
-            }
-            else if (event.type == sf::Event::KeyPressed)
-            {
-                if (event.key.code == sf::Keyboard::K)
-                {
-                    heatMap.simulate_Toggle();
-                }
-            }
-        }
+int main() {
 
-        if (mouseDown) {
-            int mouseX = sf::Mouse::getPosition(window).x * mapSize / 1280;
-            int mouseY =  sf::Mouse::getPosition(window).y * mapSize / 1280;
+  signal(SIGINT, signal_handler);
 
-            int kernelSize = 21;
-            double strength = 0.4;
+  auto sim_out_buff_ptr = std::make_shared<Simulation::SimRenderPipeline>();
+  Simulation sim(sim_out_buff_ptr);
+  SimulationWindow sim_win(sim_out_buff_ptr);
 
-            // std::cout << mouseX << " " << mouseY << "\n";
+  sim.initSim({
+      .xyNDivs{10, 10},
+      .timeStepMS{100},
+  });
 
-            // if (button == sf::Mouse::Button::Left) {
-            heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 500.0 * scaleMultiplier);
-            // } else if (button == sf::Mouse::Button::Right) {
-                // heatMap.applyHeatAtPoint(mouseX, mouseY, kernelSize, strength, 3000.0);
-            // }
-        }
+  if (!sim.start()) {
+    std::cout << "Failed to start simulation!\n";
+    exit(-1);
+  }
 
-        window.clear();
-        heatMap.draw();
-        window.display();
+  if (!sim_win.start()) {
+    std::cout << "Failed to start simulation window!\n";
+    exit(-1);
+  }
 
-        /*
-            Settings:
-            - Initial heat distribution
-            - Diffusion Coefficient
-            - Number of steps
-            - Time step
-            - Method
-            - Show degrees
-            - Boundary conditions
-
-            Capabilities:
-            - Manual step
-            - Add heat
-        */
-    }
-
-    heatMap.simulate_Stop();
-
-    return 0;
+  while (!gSignalStatus) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
+  std::cout << "User terminated.\n";
 }
