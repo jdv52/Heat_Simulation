@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Simulation.hpp"
+#include "SimulationSnapshot.hpp"
 
 namespace HeatSim {
 
@@ -11,7 +11,7 @@ public:
 
   ~SimulationToolbar();
 
-  void display(bool *p_open, Simulation::SimulationState &state);
+  void display(bool *p_open, SimulationSnapshot &snapshot);
 };
 
 } // namespace HeatSim

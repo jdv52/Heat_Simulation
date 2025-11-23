@@ -5,17 +5,14 @@
 
 #include <SFML/Graphics.hpp>
 
-class HeatMapGradient
-{
-    public:
+class HeatMapGradient {
+public:
+  explicit HeatMapGradient(std::vector<sf::Color> _colors);
 
-        HeatMapGradient(std::vector<sf::Color> _colors);
+  sf::Color mapdoubleToColor(double val, double min = 0, double max = 1);
 
-        sf::Color mapdoubleToColor(double val, double min = 0, double max = 1);
-
-    private:
-        std::vector<sf::Color> colors;
-
+private:
+  std::vector<sf::Color> colors;
 };
 
 #endif

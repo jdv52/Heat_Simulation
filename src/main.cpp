@@ -9,20 +9,6 @@ using namespace HeatSim;
 
 volatile std::sig_atomic_t gSignalStatus;
 
-void foo(std::shared_ptr<Simulation::SimRenderPipeline> ptr) {
-  while (!gSignalStatus) {
-    auto state = ptr->read();
-
-    std::cout << "Number of iterations: " << state.nIters << "\n";
-    std::cout << "Sim time: " << state.simTimeMS << "\n";
-    std::cout << "Actual Update Period: " << state.actualUpdatePeriodMS << "\n";
-    std::cout << "Avg update rate: " << state.nIters / state.simTimeMS * 1000
-              << "\n";
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-}
-
 void signal_handler(int signal) { gSignalStatus = signal; }
 
 int main() {
@@ -30,13 +16,13 @@ int main() {
   signal(SIGINT, signal_handler);
 
   auto sim_out_buff_ptr = std::make_shared<Simulation::SimRenderPipeline>();
-  Simulation sim(sim_out_buff_ptr);
-  SimulationWindow sim_win(sim_out_buff_ptr);
+  auto sim_cmd_buff_ptr = std::make_shared<Simulation::SimCommandPipeline>(100);
 
-  sim.initSim({
-      .xyNDivs{10, 10},
-      .timeStepMS{100},
-  });
+  Simulation sim(sim_out_buff_ptr, sim_cmd_buff_ptr);
+  SimulationWindow sim_win(sim_out_buff_ptr, sim_cmd_buff_ptr);
+
+  sim.initSim(
+      {.xyNDivs{10, 10}, .x_bounds{-1, 1}, .y_bounds{-1, 1}, .timeStepMS{10}});
 
   if (!sim.start()) {
     std::cout << "Failed to start simulation!\n";

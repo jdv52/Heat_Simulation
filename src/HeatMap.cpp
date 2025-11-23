@@ -5,33 +5,20 @@
 
 #include "HeatMap.hpp"
 
-HeatMap::HeatMap(int stepSize, int mapSize, sf::RenderWindow *ctx)
-    : shared_mesh_ptr(std::make_shared<PDE::SpatialMesh>(
-          std::vector<double>(2, 1.0), mapSize)),
-      drawingMatrix(mapSize, mapSize) {
-  this->stepSize = stepSize;
-  this->mapSize = mapSize;
-  this->window_ctx = ctx;
-
-  clearDrawing();
-
-  simulationRunning = false;
-
-  initMap();
-  initPDE();
-}
+HeatMap::HeatMap(std::size_t _stepSize, std::size_t _mapSize,
+                 sf::RenderWindow &ctx, HeatMapGradient gradient)
+    : stepSize{_stepSize}, mapSize{_mapSize}, window_ctx{ctx},
+      gradient(gradient) {}
 
 HeatMap::~HeatMap() {}
 
-void HeatMap::setCellTemperature(int i, int j, double temperature) {
-  shared_mesh_ptr->setFValAtMeshPoint(std::vector<int>({i, j}),
-                                      std::clamp(temperature, 0.0, 1.0));
-}
-
+/*
 void HeatMap::setGradient(HeatMapGradient &_gradient) {
   this->gradient = &_gradient;
 }
+*/
 
+/*
 void HeatMap::applyHeatAtPoint(int x, int y, int kernelSize, double strength,
                                double heatMultiplier) {
   double sum = 0;
@@ -60,48 +47,38 @@ void HeatMap::applyHeatAtPoint(int x, int y, int kernelSize, double strength,
 
       if (matrixX > 0 && matrixX < mapSize - 1 && matrixY > 0 &&
           matrixY < mapSize - 1)
-        drawingMatrix(matrixX, matrixY) += kernel[i][j] * heatMultiplier / sum;
+        drawingMatrix(matrixX, matrixY) += kernel[i][j] * heatMultiplier /
+sum;
     }
   }
 }
+*/
 
-double HeatMap::source_fn(std::vector<int> x, double t) {
-  int i = x.at(0);
-  int j = x.at(1);
+void HeatMap::draw(PDE::SpatialMesh &mesh) {
 
-  return drawingMatrix(i, j);
-}
-
-void HeatMap::draw() {
-  std::lock_guard<std::mutex> lock(mutex);
-
-  for (int i = 0; i < mapSize; ++i) {
-    for (int j = 0; j < mapSize; ++j) {
-      auto cell_rect = sf::RectangleShape(sf::Vector2f(stepSize, stepSize));
-      cell_rect.setPosition(sf::Vector2f(i * stepSize + 0, j * stepSize + 0));
+  for (std::size_t i = 0; i < mapSize; ++i) {
+    for (std::size_t j = 0; j < mapSize; ++j) {
+      auto cell_rect = sf::RectangleShape(sf::Vector2f(
+          static_cast<float>(stepSize), static_cast<float>(stepSize)));
+      cell_rect.setPosition(
+          sf::Vector2f(static_cast<float>(i * stepSize) + 0.0f,
+                       static_cast<float>(j * stepSize) + 0.0f));
       cell_rect.setOutlineThickness(1.0);
       cell_rect.setOutlineColor(sf::Color::Black);
 
-      double temp =
-          shared_mesh_ptr->getFValAtMeshPoint(std::vector<int>({i, j}));
+      try {
+        double temp = mesh.getFValAtMeshPoint(std::vector<std::size_t>({i, j}));
+        cell_rect.setFillColor(gradient.mapdoubleToColor(temp, -1000, 1000));
+        window_ctx.draw(cell_rect);
 
-      cell_rect.setFillColor(gradient->mapdoubleToColor(temp, -1000, 1000));
-      window_ctx->draw(cell_rect);
+      } catch (...) {
+        std::cout << "Couldn't draw!\n";
+      }
     }
   }
 }
 
-void HeatMap::print() { shared_mesh_ptr->printMesh(); }
-
-void HeatMap::initMap() {
-  std::cout << "Initializing map and solver...\n";
-  solver = std::make_unique<ForwardDifference>(0.01);
-
-  for (int i = 0; i < mapSize * mapSize; ++i) {
-    shared_mesh_ptr->setFValAtIdx(i, 0.0);
-  }
-}
-
+/*
 void HeatMap::initPDE() {
   PDE::Function_handle fn = [this](std::vector<int> x, double t) {
     return this->source_fn(x, t);
@@ -110,51 +87,20 @@ void HeatMap::initPDE() {
   heatEq =
       std::make_unique<PDE::HeatEquationProblem>(1e-2, shared_mesh_ptr, fn);
 }
+*/
 
+/*
 void HeatMap::simulate_ManualStep() {
   solver->solve(*heatEq);
   clearDrawing();
 }
+*/
 
-double HeatMap::getPointOnDrawing(int i, int j) { return drawingMatrix(i, j); }
+/*
+double HeatMap::getPointOnDrawing(int i, int j) { return drawingMatrix(i, j);
+}
+*/
 
+/*
 void HeatMap::clearDrawing() { drawingMatrix.setZero(); }
-
-void HeatMap::simulate_Start() {
-  if (!simulationRunning) {
-    std::cout << "Starting Simulation...\n";
-    simulationRunning = true;
-    updateThread = std::thread(&HeatMap::simulate_ThreadedLoop, this);
-    std::cout << "Started!\n";
-  }
-}
-
-void HeatMap::simulate_Stop() {
-  if (simulationRunning) {
-    simulationRunning = false;
-    std::cout << "Stopping Simulation.\n";
-    if (updateThread.joinable()) {
-      updateThread.join();
-    }
-
-    std::cout << "Stopped!\n";
-  }
-}
-
-void HeatMap::simulate_Toggle() {
-  if (simulationRunning)
-    simulate_Stop();
-  else
-    simulate_Start();
-}
-
-void HeatMap::simulate_ThreadedLoop() {
-  while (simulationRunning) {
-    {
-      std::lock_guard<std::mutex> lock(mutex);
-      solver->solve(*heatEq);
-      clearDrawing();
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  }
-}
+*/

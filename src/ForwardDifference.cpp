@@ -15,7 +15,7 @@ void ForwardDifference::solve(PDE::HeatEquationProblem &heatEq) {
   //       - Can we have a function that just copies over the solution vector
   //       directly to the domain? As for non-optimizing actions:
   //       - Need to integrate boundary conditions and source function
-  int spatialDivs = (heatEq.getDomainPtr())->getNumDivs();
+  int spatialDivs = static_cast<int>((heatEq.getDomainPtr())->getNumDivs());
   double sigma = heatEq.getDifussionCoefficient() * (double)timeStep *
                  double(spatialDivs) * double(spatialDivs);
   // std::cout << "Sigma was: " << sigma << "\n";

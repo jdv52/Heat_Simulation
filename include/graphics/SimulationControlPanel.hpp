@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Simulation.hpp"
+#include "SimulationSnapshot.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
 
@@ -13,7 +13,7 @@ public:
 
   ~SimulationControlPanel();
 
-  void display(bool *p_open, Simulation::SimulationState &state);
+  void display(bool *p_open, SimulationSnapshot &snapshot);
 
   ImGuiWindowFlags window_flags;
 };

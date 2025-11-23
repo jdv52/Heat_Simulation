@@ -15,13 +15,15 @@ add_executable(heat_sim
   src/main.cpp 
   src/PDESolver.cpp 
   src/PDE.cpp 
-  src/HeatMapGradient.cpp 
+  # src/HeatMapGradient.cpp 
   src/HeatMap.cpp 
   src/ForwardDifference.cpp 
   src/Simulation.cpp 
   src/SimulationWindow.cpp 
   src/SimulationToolbar.cpp 
   src/SimulationControlPanel.cpp
+  src/SimulationCommands.cpp
+  src/HeatMapGradient.cpp
 )
 target_link_libraries(heat_sim
   PRIVATE
@@ -29,3 +31,4 @@ target_link_libraries(heat_sim
   Eigen3::Eigen
   ImGui-SFML::ImGui-SFML
 )
+target_compile_options(heat_sim PRIVATE -Wall -Wextra -Werror -Wconversion)
