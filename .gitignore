@@ -1,5 +1,4 @@
 build
-.envrc
 .direnv
 flake.lock
 imgui.ini
