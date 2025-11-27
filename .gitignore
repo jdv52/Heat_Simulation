@@ -2,6 +2,6 @@ build
 .envrc
 .direnv
 flake.lock
-flake.nix
 imgui.ini
 *.txt
+plugins

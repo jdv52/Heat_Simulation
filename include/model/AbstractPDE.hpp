@@ -11,7 +11,7 @@ using forcing_function =
 
 class AbstractPDE {
 public:
-  AbstractPDE(std::vector<AbstractBoundaryCondition> bcs);
+  AbstractPDE();
   ~AbstractPDE();
 
   virtual double evalAt(std::vector<float> x) = 0;

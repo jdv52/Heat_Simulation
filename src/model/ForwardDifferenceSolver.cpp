@@ -1,6 +1,6 @@
 #include "model/ForwardDifferenceSolver.hpp"
 
-using namespace HeaetSim;
+using namespace HeatSim;
 
 ForwardDifference::ForwardDifference() {}
 

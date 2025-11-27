@@ -1,4 +1,5 @@
 #include "ConfigManager.hpp"
+#include <dlfcn.h>
 #include <format>
 #include <fstream>
 #include <inicpp.h>
@@ -123,6 +124,21 @@ void ConfigManager::loadConfigFile(std::filesystem::path path) {
   cfg.setDiffusionCoefficient(
       cfgIni["SimulationConfiguration//Model"]["diffusionCoefficient"]
           .as<double>());
+
+  std::filesystem::path pluginFolder =
+      cfgIni["SimulationConfiguration//General"]["pluginFolder"]
+          .as<std::string>();
+  loadPlugins(pluginFolder);
+}
+
+void ConfigManager::loadPlugins(std::filesystem::path) {
+
+  void *handle = dlopen("./plugins/libforward_difference.so", RTLD_LAZY);
+  if (handle) {
+    dlclose(handle);
+  } else {
+    fprintf(stderr, "dlerror: %s\n", dlerror());
+  }
 }
 
 SimulationConfig ConfigManager::getConfig() { return cfg; }

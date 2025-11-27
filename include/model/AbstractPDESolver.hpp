@@ -9,8 +9,8 @@ namespace HeatSim {
 
 class AbstractPDESolver {
 public:
-  AbstractPDESolver();
-  ~AbstractPDESolver();
+  AbstractPDESolver() = default;
+  ~AbstractPDESolver() = default;
 
   virtual void solve(Mesh &mesh, std::shared_ptr<AbstractPDE> pde,
                      GridRepresentation grid, double dt) = 0;

@@ -5,8 +5,10 @@
 
 namespace HeatSim {
 class AbstractBoundaryCondition {
-  AbstractBoundaryCondition();
-  ~AbstractBoundaryCondition();
+
+public:
+  AbstractBoundaryCondition() = default;
+  ~AbstractBoundaryCondition() = default;
 
   virtual double
   computeBoundaryValue(double dt, std::vector<std::size_t> mesh_pt, Mesh mesh);

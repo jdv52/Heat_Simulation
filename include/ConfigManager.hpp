@@ -12,6 +12,7 @@ public:
 
   void loadConfigFile(std::filesystem::path path);
   SimulationConfig getConfig();
+  void loadPlugins(std::filesystem::path path);
 
 private:
   SimulationConfig cfg;
