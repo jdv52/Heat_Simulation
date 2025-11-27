@@ -1,5 +1,6 @@
 #include "ConfigManager.hpp"
 #include <dlfcn.h>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <inicpp.h>
@@ -126,18 +127,29 @@ void ConfigManager::loadConfigFile(std::filesystem::path path) {
           .as<double>());
 
   std::filesystem::path pluginFolder =
-      cfgIni["SimulationConfiguration//General"]["pluginFolder"]
+      cfgIni["SimulationConfiguration//General"]["pluginDirectory"]
           .as<std::string>();
   loadPlugins(pluginFolder);
 }
 
-void ConfigManager::loadPlugins(std::filesystem::path) {
+void ConfigManager::loadPlugins(std::filesystem::path pluginFolder) {
 
-  void *handle = dlopen("./plugins/libforward_difference.so", RTLD_LAZY);
-  if (handle) {
-    dlclose(handle);
-  } else {
-    fprintf(stderr, "dlerror: %s\n", dlerror());
+  if (!std::filesystem::exists(pluginFolder) ||
+      !std::filesystem::is_directory(pluginFolder)) {
+    std::cout << "Could not find plugin folder!\n";
+    return;
+  }
+
+  for (const auto &entry : std::filesystem::directory_iterator(pluginFolder)) {
+    if (entry.path().extension() == ".so") {
+      void *handle = dlopen(entry.path().c_str(), RTLD_LAZY);
+      if (handle) {
+        std::cout << "Found plugin: " << entry.path() << "\n";
+        dlclose(handle);
+      } else {
+        fprintf(stderr, "dlerror: %s\n", dlerror());
+      }
+    }
   }
 }
 
