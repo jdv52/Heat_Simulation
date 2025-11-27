@@ -18,12 +18,15 @@ add_executable(heat_sim
   # src/HeatMapGradient.cpp 
   src/HeatMap.cpp 
   src/ForwardDifference.cpp 
-  src/Simulation.cpp 
+  src/SimulationManager.cpp 
   src/SimulationWindow.cpp 
   src/SimulationToolbar.cpp 
   src/SimulationControlPanel.cpp
   src/SimulationCommands.cpp
   src/HeatMapGradient.cpp
+  src/GridRepresentation.cpp
+  src/Mesh.cpp
+  src/Simulation.cpp
 )
 target_link_libraries(heat_sim
   PRIVATE

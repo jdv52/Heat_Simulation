@@ -1,8 +1,8 @@
 #pragma once
 
 #include "HeatMap.hpp"
-#include "Simulation.hpp"
 #include "SimulationControlPanel.hpp"
+#include "SimulationManager.hpp"
 #include "SimulationSnapshot.hpp"
 #include "SimulationToolbar.hpp"
 #include "graphics/SimulationControlPanel.hpp"
@@ -16,8 +16,9 @@ namespace HeatSim {
 
 class SimulationWindow {
 public:
-  SimulationWindow(std::shared_ptr<Simulation::SimRenderPipeline> sim_input,
-                   std::shared_ptr<Simulation::SimCommandPipeline> cmd_output);
+  SimulationWindow(
+      std::shared_ptr<SimulationManager::SimRenderPipeline> sim_input,
+      std::shared_ptr<SimulationManager::SimCommandPipeline> cmd_output);
 
   ~SimulationWindow();
 
@@ -30,8 +31,8 @@ private:
   void processInputEvents(sf::Event event);
   void updateGraphics(std::shared_ptr<SimulationSnapshot> state);
 
-  std::shared_ptr<Simulation::SimRenderPipeline> input_pipe;
-  std::shared_ptr<Simulation::SimCommandPipeline> cmd_pipe;
+  std::shared_ptr<SimulationManager::SimRenderPipeline> input_pipe;
+  std::shared_ptr<SimulationManager::SimCommandPipeline> cmd_pipe;
 
   sf::RenderWindow window;
   sf::Clock deltaClock;

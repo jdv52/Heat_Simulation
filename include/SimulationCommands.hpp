@@ -4,7 +4,7 @@ enum class CommandType { simStart, simStop };
 
 namespace HeatSim {
 
-class Simulation;
+class SimulationManager;
 
 class SimCommandBase {
 
@@ -13,7 +13,7 @@ public:
 
   virtual ~SimCommandBase() {}
 
-  virtual void exec(Simulation &) = 0;
+  virtual void exec(SimulationManager &) = 0;
 
 protected:
   CommandType type;
@@ -25,7 +25,7 @@ public:
 
   ~SimToggleCommand();
 
-  virtual void exec(Simulation &sim) override;
+  virtual void exec(SimulationManager &sim) override;
 };
 
 class SimResumeCommand : public SimCommandBase {
@@ -34,7 +34,7 @@ public:
 
   ~SimResumeCommand();
 
-  virtual void exec(Simulation &sim) override;
+  virtual void exec(SimulationManager &sim) override;
 };
 
 } // namespace HeatSim

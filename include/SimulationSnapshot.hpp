@@ -8,12 +8,12 @@ class SimulationSnapshot {
 public:
   SimulationSnapshot(bool isRunning, long nIters, double simTimeMS,
                      double actualUpdatePeriodMS,
-                     double algorithmCompletionTimeMS, PDE::SpatialMesh mesh)
+                     double algorithmCompletionTimeMS)
       :
 
         _isRunning{isRunning}, _nIters{nIters}, _simTimeMS{simTimeMS},
         _actualUpdatePeriodMS{actualUpdatePeriodMS},
-        _algorithmCompletionTimeMS{algorithmCompletionTimeMS}, _mesh{mesh} {}
+        _algorithmCompletionTimeMS{algorithmCompletionTimeMS} {}
   ~SimulationSnapshot() {}
 
   bool isRunning() const { return _isRunning; }
@@ -23,7 +23,7 @@ public:
   double algorithmCompletionTimeMS() const {
     return _algorithmCompletionTimeMS;
   }
-  PDE::SpatialMesh &mesh() { return _mesh; }
+  // PDE::SpatialMesh &mesh() { return _mesh; }
 
 private:
   bool _isRunning;
@@ -31,7 +31,7 @@ private:
   double _simTimeMS;
   double _actualUpdatePeriodMS;
   double _algorithmCompletionTimeMS;
-  PDE::SpatialMesh _mesh;
+  // PDE::SpatialMesh _mesh;
   // residual
   // converge warnings
   // spatial mesh

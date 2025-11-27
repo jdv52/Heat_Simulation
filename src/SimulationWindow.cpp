@@ -9,8 +9,8 @@
 using namespace HeatSim;
 
 SimulationWindow::SimulationWindow(
-    std::shared_ptr<Simulation::SimRenderPipeline> sim_input,
-    std::shared_ptr<Simulation::SimCommandPipeline> cmd_output)
+    std::shared_ptr<SimulationManager::SimRenderPipeline> sim_input,
+    std::shared_ptr<SimulationManager::SimCommandPipeline> cmd_output)
     : input_pipe(sim_input), cmd_pipe(cmd_output) {}
 
 SimulationWindow::~SimulationWindow() {}
@@ -64,7 +64,7 @@ void SimulationWindow::updateGraphics(
     toolbar.display(&p_open, *state);
     controlPanel.display(&p_open, *state);
 
-    heatMap->draw(state->mesh());
+    // heatMap->draw(state->mesh());
   }
 
   ImGui::ShowDemoWindow();

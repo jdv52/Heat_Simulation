@@ -96,7 +96,9 @@ HeatEquationProblem::HeatEquationProblem(
     double diffusionCoefficient, std::shared_ptr<SpatialMesh> spatialDomain,
     Function_handle _source)
     : diffusionCoefficient(diffusionCoefficient), domain(spatialDomain),
-      source(_source) {}
+      source(_source) {
+  // Construct the tridiagonal matrix
+}
 
 HeatEquationProblem::~HeatEquationProblem() {}
 

@@ -66,14 +66,9 @@ void HeatMap::draw(PDE::SpatialMesh &mesh) {
       cell_rect.setOutlineThickness(1.0);
       cell_rect.setOutlineColor(sf::Color::Black);
 
-      try {
-        double temp = mesh.getFValAtMeshPoint(std::vector<std::size_t>({i, j}));
-        cell_rect.setFillColor(gradient.mapdoubleToColor(temp, -1000, 1000));
-        window_ctx.draw(cell_rect);
-
-      } catch (...) {
-        std::cout << "Couldn't draw!\n";
-      }
+      double temp = mesh.getFValAtMeshPoint(std::vector<std::size_t>({i, j}));
+      cell_rect.setFillColor(gradient.mapdoubleToColor(temp, -1000, 1000));
+      window_ctx.draw(cell_rect);
     }
   }
 }

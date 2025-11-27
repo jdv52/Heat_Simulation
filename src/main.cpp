@@ -1,4 +1,5 @@
-#include "Simulation.hpp"
+#include "SimulationConfig.hpp"
+#include "SimulationManager.hpp"
 #include "graphics/SimulationWindow.hpp"
 #include "util/SPSCDoubleBuffer.hpp"
 #include <chrono>
@@ -15,14 +16,25 @@ int main() {
 
   signal(SIGINT, signal_handler);
 
-  auto sim_out_buff_ptr = std::make_shared<Simulation::SimRenderPipeline>();
-  auto sim_cmd_buff_ptr = std::make_shared<Simulation::SimCommandPipeline>(100);
+  auto sim_out_buff_ptr =
+      std::make_shared<SimulationManager::SimRenderPipeline>();
+  auto sim_cmd_buff_ptr =
+      std::make_shared<SimulationManager::SimCommandPipeline>(100);
 
-  Simulation sim(sim_out_buff_ptr, sim_cmd_buff_ptr);
+  SimulationConfig cfg;
+  cfg.setDt(10);
+  cfg.setDiffusionCoefficient(1);
+  cfg.setNDivs({10, 10});
+  cfg.setBounds({{-1, 1}, {-1, 1}});
+
+  SimulationManager sim(sim_out_buff_ptr, sim_cmd_buff_ptr);
   SimulationWindow sim_win(sim_out_buff_ptr, sim_cmd_buff_ptr);
 
-  sim.initSim(
+  /*
+  sim.loadConfig(
       {.xyNDivs{10, 10}, .x_bounds{-1, 1}, .y_bounds{-1, 1}, .timeStepMS{10}});
+  */
+  sim.loadConfig(cfg);
 
   if (!sim.start()) {
     std::cout << "Failed to start simulation!\n";
