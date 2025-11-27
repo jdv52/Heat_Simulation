@@ -11,7 +11,7 @@ Simulation::Simulation(SimulationConfig &cfg)
   iterationStartTime = episodeStartTime;
   prevUpdateTime = episodeStartTime;
 
-  dt = 100;
+  dt = cfg.dt();
 
   // Construct Boundary Conditions
   // Get solver from parameters

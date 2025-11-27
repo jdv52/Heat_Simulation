@@ -1,7 +1,9 @@
+#include "ConfigManager.hpp"
 #include "SimulationConfig.hpp"
 #include "SimulationManager.hpp"
 #include "graphics/SimulationWindow.hpp"
 #include "util/SPSCDoubleBuffer.hpp"
+#include <argparse/argparse.hpp>
 #include <chrono>
 #include <csignal>
 #include <iostream>
@@ -12,20 +14,31 @@ volatile std::sig_atomic_t gSignalStatus;
 
 void signal_handler(int signal) { gSignalStatus = signal; }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+  argparse::ArgumentParser program("heat_simulation");
+  program.add_argument("-c", "--cfg_file")
+      .help("default config file")
+      .required();
+
+  try {
+    program.parse_args(argc, argv);
+  } catch (const std::exception &err) {
+    std::cerr << err.what() << std::endl;
+    std::cerr << program;
+    std::exit(-1);
+  }
 
   signal(SIGINT, signal_handler);
+
+  ConfigManager cfg_mgr;
+  cfg_mgr.loadConfigFile(program.get<std::string>("-c"));
+  SimulationConfig cfg = cfg_mgr.getConfig();
 
   auto sim_out_buff_ptr =
       std::make_shared<SimulationManager::SimRenderPipeline>();
   auto sim_cmd_buff_ptr =
       std::make_shared<SimulationManager::SimCommandPipeline>(100);
-
-  SimulationConfig cfg;
-  cfg.setDt(10);
-  cfg.setDiffusionCoefficient(1);
-  cfg.setNDivs({10, 10});
-  cfg.setBounds({{-1, 1}, {-1, 1}});
 
   SimulationManager sim(sim_out_buff_ptr, sim_cmd_buff_ptr);
   SimulationWindow sim_win(sim_out_buff_ptr, sim_cmd_buff_ptr);

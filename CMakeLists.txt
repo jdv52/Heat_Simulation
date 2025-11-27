@@ -15,7 +15,6 @@ add_executable(heat_sim
   src/main.cpp 
   src/PDESolver.cpp 
   src/PDE.cpp 
-  # src/HeatMapGradient.cpp 
   src/HeatMap.cpp 
   src/ForwardDifference.cpp 
   src/SimulationManager.cpp 
@@ -27,11 +26,14 @@ add_executable(heat_sim
   src/GridRepresentation.cpp
   src/Mesh.cpp
   src/Simulation.cpp
+  src/ConfigManager.cpp
 )
 target_link_libraries(heat_sim
   PRIVATE
   sfml-graphics sfml-system sfml-window
   Eigen3::Eigen
   ImGui-SFML::ImGui-SFML
+  argparse
+  inicpp::inicpp
 )
 target_compile_options(heat_sim PRIVATE -Wall -Wextra -Werror -Wconversion)

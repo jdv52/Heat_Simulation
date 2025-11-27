@@ -27,6 +27,18 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
 )
 
+FetchContent_Declare(
+  argparse
+  GIT_REPOSITORY "https://github.com/p-ranav/argparse"
+  GIT_TAG  v3.2
+  GIT_PROGRESS TRUE
+)
+
+FetchContent_Declare(
+  inicpp
+  GIT_REPOSITORY "https://github.com/Rookfighter/inifile-cpp"
+  GIT_PROGRESS TRUE
+)
 
 # SFML
 option(SFML_BUILD_AUDIO "Build audio" OFF)
@@ -45,3 +57,9 @@ FetchContent_MakeAvailable(imgui-sfml)
 
 # Eigen
 FetchContent_MakeAvailable(eigen)
+
+# argparse
+FetchContent_MakeAvailable(argparse)
+
+#inifile
+FetchContent_MakeAvailable(inicpp)

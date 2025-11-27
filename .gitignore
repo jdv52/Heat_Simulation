@@ -3,5 +3,5 @@ build
 .direnv
 flake.lock
 flake.nix
-*.ini
+imgui.ini
 *.txt
