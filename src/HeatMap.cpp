@@ -5,6 +5,8 @@
 
 #include "HeatMap.hpp"
 
+using namespace HeatSim;
+
 HeatMap::HeatMap(std::size_t _stepSize, std::size_t _mapSize,
                  sf::RenderWindow &ctx, HeatMapGradient gradient)
     : stepSize{_stepSize}, mapSize{_mapSize}, window_ctx{ctx},
@@ -54,7 +56,10 @@ sum;
 }
 */
 
-void HeatMap::draw(PDE::SpatialMesh &mesh) {
+void HeatMap::draw(Mesh &) {
+
+  /*
+  auto m = mesh.getMesh().reshape(mapSize, mapSize);
 
   for (std::size_t i = 0; i < mapSize; ++i) {
     for (std::size_t j = 0; j < mapSize; ++j) {
@@ -71,6 +76,7 @@ void HeatMap::draw(PDE::SpatialMesh &mesh) {
       window_ctx.draw(cell_rect);
     }
   }
+*/
 }
 
 /*

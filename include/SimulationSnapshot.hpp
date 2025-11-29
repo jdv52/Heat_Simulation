@@ -1,7 +1,5 @@
 #pragma once
 
-#include "PDE.hpp"
-
 namespace HeatSim {
 
 class SimulationSnapshot {

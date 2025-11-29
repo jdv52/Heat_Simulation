@@ -3,6 +3,7 @@
 #include "SimulationConfig.hpp"
 #include "SimulationSnapshot.hpp"
 #include "model/AbstractPDESolver.hpp"
+#include "model/ConvectionDiffusionPDE.hpp"
 #include "model/GridRepresentation.hpp"
 #include "model/Mesh.hpp"
 #include <chrono>
@@ -24,6 +25,8 @@ private:
 
   GridRepresentation grid;
   Mesh mesh;
+  ConvectionDiffusionPDE pde;
+
   std::shared_ptr<AbstractPDESolver> solver;
 
   std::chrono::steady_clock::time_point episodeStartTime;

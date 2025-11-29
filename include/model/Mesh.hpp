@@ -11,6 +11,8 @@ public:
   ~Mesh() = default;
 
   Eigen::VectorXd &getMesh();
+  std::size_t getNumMeshPoints();
+  std::vector<std::size_t> getDivs();
 
 private:
   std::vector<std::size_t> nDivs;

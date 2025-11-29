@@ -1,5 +1,4 @@
-#ifndef HEATMAP_H
-#define HEATMAP_H
+#pragma once
 
 #include "Eigen/Dense"
 #include <SFML/Graphics.hpp>
@@ -9,8 +8,9 @@
 #include <vector>
 
 #include "HeatMapGradient.hpp"
-#include "PDE.hpp"
-#include "PDESolver.hpp"
+#include "model/Mesh.hpp"
+
+namespace HeatSim {
 
 class HeatMap {
 public:
@@ -19,7 +19,7 @@ public:
   ~HeatMap();
 
   void setGradient(HeatMapGradient &gradient);
-  void draw(PDE::SpatialMesh &mesh);
+  void draw(Mesh &mesh);
 
 private:
   std::size_t stepSize, mapSize;
@@ -29,4 +29,4 @@ private:
   void initMap();
 };
 
-#endif
+} // namespace HeatSim

@@ -5,7 +5,7 @@
 using namespace HeatSim;
 
 Simulation::Simulation(SimulationConfig &cfg)
-    : grid(cfg.bounds()), mesh(grid, cfg.nDivs()) {
+    : grid(cfg.bounds()), mesh(grid, cfg.nDivs()), pde(grid, mesh, 0.01) {
   nIters = 0;
   episodeStartTime = std::chrono::steady_clock::now();
   iterationStartTime = episodeStartTime;

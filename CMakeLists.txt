@@ -14,8 +14,8 @@ include_directories(
 add_library(model 
   src/model/Mesh.cpp
   src/model/GridRepresentation.cpp
-  src/model/PDE.cpp
-  src/model/PDESolver.cpp
+  src/model/ConvectionDiffusionPDE.cpp
+  src/model/AbstractPDE.cpp
 )
 
 target_link_libraries(model PUBLIC Eigen3::Eigen)

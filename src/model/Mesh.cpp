@@ -1,4 +1,5 @@
 #include "model/Mesh.hpp"
+#include <cstddef>
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
@@ -20,3 +21,7 @@ Mesh::Mesh(GridRepresentation grid, std::vector<std::size_t> _nDivs)
 }
 
 Eigen::VectorXd &Mesh::getMesh() { return mesh; }
+
+std::size_t Mesh::getNumMeshPoints() { return mesh.rows(); }
+
+std::vector<std::size_t> Mesh::getDivs() { return nDivs; }

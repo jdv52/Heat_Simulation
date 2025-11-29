@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Eigen/Dense>
+#include <Eigen/SparseCore>
 #include <functional>
 #include <model/AbstractBoundaryCondition.hpp>
 #include <vector>
@@ -11,16 +13,18 @@ using forcing_function =
 
 class AbstractPDE {
 public:
-  AbstractPDE();
-  ~AbstractPDE();
+  AbstractPDE() = default;
+  ~AbstractPDE() = default;
 
-  virtual double evalAt(std::vector<float> x) = 0;
-  virtual bool checkIsStable() = 0;
+  // virtual bool checkIsStable() = 0;
 
-  std::vector<double> computeBCs();
+  Eigen::VectorXd computeBCs();
 
-private:
+  Eigen::SparseMatrix<double> getD();
+
+protected:
   std::vector<AbstractBoundaryCondition> bcs;
+  Eigen::SparseMatrix<double> D;
 };
 
 } // namespace HeatSim

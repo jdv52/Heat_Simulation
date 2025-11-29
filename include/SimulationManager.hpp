@@ -1,7 +1,5 @@
 #pragma once
 
-#include "PDE.hpp"
-#include "PDESolver.hpp"
 #include "Simulation.hpp"
 #include "SimulationCommands.hpp"
 #include "SimulationConfig.hpp"

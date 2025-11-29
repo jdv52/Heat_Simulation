@@ -8,11 +8,16 @@ ForwardDifference::~ForwardDifference() {}
 
 void ForwardDifference::solve(Mesh &mesh, std::shared_ptr<AbstractPDE> pde,
                               GridRepresentation grid, double dt) {
-  // Create tri-diagonal differential operator from PDE
 
-  // Compute boundary conditions
+  double sigma = dt / mesh.getNumMeshPoints();
+
+  auto I = Eigen::MatrixXd::Identity(mesh.getNumMeshPoints(),
+                                     mesh.getNumMeshPoints());
+
+  auto D = pde->getD();
+  auto b = pde->computeBCs();
 
   // Compute forcing function
 
-  // wijp1 = (I - sigma * D) * wij + F
+  auto wijp1 = (I - sigma * D) * mesh.getMesh(); // + F + b
 }
